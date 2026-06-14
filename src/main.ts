@@ -55,18 +55,6 @@ function render() {
   }
 
   ctx.putImageData(image, 0, 0)
-
-  // 격자 셀 경계(픽셀 좌표가 SCALE의 배수인 지점)를 빨간색으로 표시.
-  ctx.strokeStyle = 'red'
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  for (let p = 0; p <= SIZE; p += SCALE) {
-    ctx.moveTo(p + 0.5, 0)
-    ctx.lineTo(p + 0.5, SIZE)
-    ctx.moveTo(0, p + 0.5)
-    ctx.lineTo(SIZE, p + 0.5)
-  }
-  ctx.stroke()
 }
 
 // smooth ↔ linear 토글 버튼
