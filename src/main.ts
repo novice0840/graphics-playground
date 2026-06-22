@@ -36,6 +36,7 @@ function render() {
       const dy = perlin.noise(nx, ny + eps) - perlin.noise(nx, ny - eps);
       // 법선 = (-dx, -dy, 1) 정규화
       const nz = 1;
+      // len = 법선 벡터 (-dx, -dy, nz)의 길이
       const len = Math.hypot(dx, dy, nz);
       const normal = { x: -dx / len, y: -dy / len, z: nz / len };
 
