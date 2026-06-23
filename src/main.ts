@@ -1,12 +1,14 @@
 import "./style.css";
 import { Perlin, setFadeMode, fadeMode } from "./perlin";
 
-const SIZE = 500;
+const SIZE = 250;
 // 값이 클수록 영역(덩어리)이 커진다. 한 칸이 차지하는 픽셀 수.
-const SCALE = 60;
+const SCALE = 30;
 
 const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
 const ctx = canvas.getContext("2d")!;
+const canvas2 = document.querySelector<HTMLCanvasElement>("#canvas2")!;
+const ctx2 = canvas2.getContext("2d")!;
 
 const perlin = new Perlin();
 
@@ -17,10 +19,12 @@ const LIGHT = { x: -0.6 / len, y: -0.6 / len, z: 0.5 / len };
 
 // 노이즈를 높이맵으로 보고 음영을 입혀 그린다.
 // 기울기(1차 미분)가 꺾이는 셀 경계는 선형 보간일 때 격자 줄무늬로 드러난다.
-function render() {
-  const image = ctx.createImageData(SIZE, SIZE);
+// flip=true면 법선의 x·y 부호를 반대로 (빛을 반대편에서 쏘는 효과)
+function render(targetCtx: CanvasRenderingContext2D, flip = false) {
+  const image = targetCtx.createImageData(SIZE, SIZE);
   const data = image.data;
   const eps = 1 / SCALE; // (앱실론) 기울기 계산용 미소 간격
+  const sign = flip ? 1 : -1;
 
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
@@ -34,7 +38,7 @@ function render() {
       const nz = 1;
       // len = 법선 벡터 (-dx, -dy, nz)의 길이
       const len = Math.hypot(dx, dy, nz);
-      const normal = { x: -dx / len, y: -dy / len, z: nz / len };
+      const normal = { x: (sign * dx) / len, y: (sign * dy) / len, z: nz / len };
 
       // 람베르트 음영: 법선·빛 내적
       const diffuse = Math.max(
@@ -51,7 +55,7 @@ function render() {
     }
   }
 
-  ctx.putImageData(image, 0, 0);
+  targetCtx.putImageData(image, 0, 0);
 }
 
 // smooth ↔ linear 토글 버튼
@@ -61,12 +65,16 @@ button.style.cssText =
 function updateLabel() {
   button.textContent = `fade: ${fadeMode} (클릭해서 전환)`;
 }
+function renderAll() {
+  render(ctx, false); // 원본
+  render(ctx2, true); // 법선 x·y 부호 반전
+}
 button.addEventListener("click", () => {
   setFadeMode(fadeMode === "smooth" ? "linear" : "smooth");
   updateLabel();
-  render();
+  renderAll();
 });
 updateLabel();
 canvas.parentElement?.insertBefore(button, canvas);
 
-render();
+renderAll();
