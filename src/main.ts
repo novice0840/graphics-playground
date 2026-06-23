@@ -11,13 +11,9 @@ const ctx = canvas.getContext("2d")!;
 const perlin = new Perlin();
 
 // 비스듬한 빛 방향 (정규화된 벡터). 표면 법선과 내적해 명암을 낸다.
-const LIGHT = (() => {
-  const lx = -0.6;
-  const ly = -0.6;
-  const lz = 0.5;
-  const len = Math.hypot(lx, ly, lz);
-  return { x: lx / len, y: ly / len, z: lz / len };
-})();
+// 방향광이기 때문에 시작점이 없고 방향만 있음
+const len = Math.hypot(-0.6, -0.6, 0.5);
+const LIGHT = { x: -0.6 / len, y: -0.6 / len, z: 0.5 / len };
 
 // 노이즈를 높이맵으로 보고 음영을 입혀 그린다.
 // 기울기(1차 미분)가 꺾이는 셀 경계는 선형 보간일 때 격자 줄무늬로 드러난다.
